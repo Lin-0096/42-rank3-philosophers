@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:18:04 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/08 15:46:30 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/08 21:51:03 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,20 @@ static int	read_num(char *str)
 	while (*str == ' ' || (*str >= 9 && *str <= 13))
 		str++;
 	if (!*str)
-		return (0);
+		return (-1);
 	while(*str >= '0' && *str <= '9')
 	{
 		result = result * 10 + (*str - '0');
-		if (result < INT_MIN || result > INT_MAX)
-			return (0);
+		if (result > INT_MAX)
+			return (-1);
 		str++;
 	}
+	if (*str)
+		return (-1);
 	return ((int)result);
 }
 
-int	parse_argv(int argc, char **argv, t_argvs *argvs)
+int	parse_argv(int argc, char **argv, t_data *argvs)
 {
 	int	i;
 
@@ -40,7 +42,7 @@ int	parse_argv(int argc, char **argv, t_argvs *argvs)
 	i = 1;
 	while (i < argc)
 	{
-		if (!read_num(argv[i]))
+		if (read_num(argv[i]) <= 0)
 			return (0);
 		i++;
 	}
@@ -49,11 +51,8 @@ int	parse_argv(int argc, char **argv, t_argvs *argvs)
 	argvs->time_to_eat = read_num(argv[3]);
 	argvs->time_to_sleep = read_num(argv[4]);
 	if (argc == 6)
-	{
 		argvs->num_must_eat = read_num(argv[5]);
-		argvs->has_must_eat = 1;
-	}
-	else
-		argvs->has_must_eat = 0;
+	else if (argc == 5)
+		argvs->num_must_eat = -1;
 	return (1);
 }
