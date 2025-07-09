@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:18:04 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/09 10:43:02 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/09 15:54:17 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static int	read_num(char *str)
 	return ((int)result);
 }
 
-int	parse_argv(int argc, char **argv, t_data *argvs)
+int	parse_argv(int argc, char **argv, t_data *data)
 {
 	int	i;
 	int	tmp;
@@ -48,13 +48,13 @@ int	parse_argv(int argc, char **argv, t_data *argvs)
 			return (0);
 		i++;
 	}
-	argvs->number_of_philo = read_num(argv[1]);
-	argvs->time_to_die = read_num(argv[2]);
-	argvs->time_to_eat = read_num(argv[3]);
-	argvs->time_to_sleep = read_num(argv[4]);
+	data->number_of_philo = read_num(argv[1]);
+	data->time_to_die = read_num(argv[2]);
+	data->time_to_eat = read_num(argv[3]);
+	data->time_to_sleep = read_num(argv[4]);
 	if (argc == 6)
-		argvs->num_must_eat = read_num(argv[5]);
+		data->num_must_eat = read_num(argv[5]);
 	else if (argc == 5)
-		argvs->num_must_eat = -1;
+		data->num_must_eat = -1;
 	return (1);
 }

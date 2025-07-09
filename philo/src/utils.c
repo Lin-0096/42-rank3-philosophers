@@ -6,22 +6,31 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 10:50:56 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/09 12:53:30 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/09 17:18:16 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	free_and_destory_mutex(pthread_mutex_t *fork, int i)
+static void	free_and_destroy_forks(t_data *data, int i)
 {
-	if (!fork)
-		return ;
-	while (i >= 0)
+	if (data->fork)
 	{
-		pthread_mutex_destroy(&fork[i]);
-		i--;
+		while (i >= 0)
+		{
+			pthread_mutex_destroy(&data->fork[i]);
+			i--;
+		}
+		free(data->fork);
 	}
-	free(fork);
+}
+
+void	cleanup_all_mutex_and_free(t_data *data)
+{
+	free_and_destroy_forks(data, data->number_of_philo - 1);
+	pthread_mutex_destroy(&data->print);
+	if (data->philo)
+		free(data->philo);
 }
 
 long	get_current_time(void)
@@ -45,24 +54,20 @@ int	init_data(t_data *data)
 	while (i < data->number_of_philo)
 	{
 		if (pthread_mutex_init(&data->fork[i], NULL) != 0) //success 0;
-			return (free_and_destory_mutex(data->fork, i), 0);
+			return (free_and_destroy_forks(data, i - 1), 0); //should -1 here??
 		i++;
 	}
 	if (pthread_mutex_init(&data->print, NULL) != 0)
-		return (free_and_destory_mutex(data->fork, i), 0);
+		return (free_and_destroy_forks(data, data->number_of_philo - 1), 0); //should -1 here??
 	data->philo = malloc(sizeof(t_philo) * data->number_of_philo);
 	if (!data->philo)
-	{
-		free_and_destory_mutex(data->fork, i);
-		pthread_mutex_destroy(&data->print);
-		return (0);
-	}
+		return (cleanup_all_mutex_and_free(data), 0);
 	data->start_time = get_current_time();//
 	data->someone_died = 0;
 	return (1);
 }
 
-int init_philo(t_data *data)
+int	init_philo(t_data *data)
 {
 	int	i;
 

@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:45:33 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/09 12:50:01 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/09 16:42:30 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,13 @@ typedef struct s_philo
 	t_data			*data;
 }	t_philo;
 
-
 //parse
 int	parse_argv(int argc, char **argv, t_data *argvs);
+
+//utils
+void	cleanup_init_philo_fail(t_data *data);
+long	get_current_time(void);
+int		init_data(t_data *data);
+int		init_philo(t_data *data);
 
 #endif
