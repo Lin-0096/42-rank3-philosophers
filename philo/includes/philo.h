@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:45:33 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/09 14:48:29 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/09 23:11:53 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,7 @@
 # include <stdlib.h> //EXIT_FALIURE
 # include <pthread.h>
 # include <sys/time.h> //struct timeval
-/*
-struct timeval {
-    time_t      tv_sec; // seconds(start from 1.1.1970从1970)
-    suseconds_t tv_usec;//microseconds(0 ~ 999999)
-};
-*/
+
 typedef struct s_philo	t_philo;
 typedef struct s_data	t_data;
 
@@ -34,13 +29,12 @@ typedef struct s_data
 	int				time_to_eat;// how long does it take to have a meal
 	int				time_to_sleep; //how long of sleep time
 	int				num_must_eat;
-
-	long			start_time;
+	long			start_time; //get_current_time
 	pthread_mutex_t	*fork; //array of mutax
 	pthread_mutex_t	print; //avoid overlap
 	t_philo			*philo;
-
-	int				someone_died; //???do i need this
+	int				someone_died;
+	pthread_mutex_t	died_mutex; //if more than one thread try to use int some_died, it will cause data race, so use mutex to protect it
 }	t_data;
 
 typedef struct s_philo
@@ -54,10 +48,10 @@ typedef struct s_philo
 	t_data			*data;
 }	t_philo;
 
-//parse
+//parse argv to t_data
 int	parse_argv(int argc, char **argv, t_data *argvs);
 
-//utils
+//utils, init t_data, t_philo
 void	cleanup_all_mutex_and_free(t_data *data);
 long	get_current_time(void);
 int		init_data(t_data *data);

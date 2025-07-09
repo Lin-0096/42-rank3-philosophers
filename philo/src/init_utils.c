@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 14:39:46 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/09 18:32:20 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/09 23:08:10 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void	cleanup_all_mutex_and_free(t_data *data)
 {
 	free_and_destroy_forks(data, data->number_of_philo - 1);
 	pthread_mutex_destroy(&data->print);
+	pthread_mutex_destroy(&data->died_mutex);
 	if (data->philo)
 		free(data->philo);
 }
@@ -53,24 +54,22 @@ int	init_data(t_data *data)
 	i = 0;
 	while (i < data->number_of_philo)
 	{
-		/*test failure
-		if (i == 1)
-		{
-			printf("Forced mutex init failure at index %i\n", i);
-			return (free_and_destroy_forks(data, i - 1), 0);
-		}
-		*/
 		if (pthread_mutex_init(&data->fork[i], NULL) != 0) //success 0;
 			return (free_and_destroy_forks(data, i - 1), 0); //should -1 here??
 		i++;
 	}
 	if (pthread_mutex_init(&data->print, NULL) != 0)
 		return (free_and_destroy_forks(data, data->number_of_philo - 1), 0); //should -1 here??
+	data->someone_died = 0;
+	if (pthread_mutex_init(&data->died_mutex, NULL) != 0)
+	{
+		pthread_mutex_destroy(&data->print);
+		return (free_and_destroy_forks(data, data->number_of_philo - 1), 0);
+	}
 	data->philo = malloc(sizeof(t_philo) * data->number_of_philo);
 	if (!data->philo)
 		return (cleanup_all_mutex_and_free(data), 0);
 	data->start_time = get_current_time();//
-	data->someone_died = 0;
 	return (1);
 }
 
