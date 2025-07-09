@@ -1,0 +1,35 @@
+pthread_mutex_t：
+A mutex is used to prevent data races — to make sure only one thread accesses a critical section of code at a time.
+It's like a lock that a thread must "acquire" before accessing shared data
+
+example：
+pthread_mutex_t	lock;
+pthread_mutex_init(&lock, NULL);      // Initialize the lock
+pthread_mutex_lock(&lock);            // Lock it (enter critical section)
+// do something shared here
+pthread_mutex_unlock(&lock);          // Unlock (leave critical section)
+-----------------------------
+pthread_t：
+the data type used to represent a thread.
+think of it like a "handle" or "ID" to a thread.
+When create a new thread using pthread_create(), you pass a pthread_t variable to keep track of that thread.
+::
+pthread_creat()
+pthread_join()
+pthread_detach()
+--------------------------------
+long	get_current_time(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL); //fills the tv struct with the current system time
+	return (tv.tv_sec * 1000L + tv.tv_usec / 1000);
+	//1000L ensures the result is a long to avoid overflow.
+	//convert seconds to milliseconds. convert microseconds to milliseconds. return total time then
+}
+
+struct timeval {
+    time_t      tv_sec; // seconds(start from 1.1.1970从1970)
+    suseconds_t tv_usec;//microseconds(0 ~ 999999)
+};
+---------------------------------

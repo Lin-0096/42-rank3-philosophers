@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:18:04 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/08 21:51:03 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/09 10:43:02 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,15 @@ static int	read_num(char *str)
 int	parse_argv(int argc, char **argv, t_data *argvs)
 {
 	int	i;
+	int	tmp;
 
 	if (argc != 5 && argc != 6)
 		return (0);
 	i = 1;
 	while (i < argc)
 	{
-		if (read_num(argv[i]) <= 0)
+		tmp = read_num(argv[i]);
+		if (tmp <= 0)
 			return (0);
 		i++;
 	}
