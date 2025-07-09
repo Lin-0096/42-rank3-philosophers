@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:17:43 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/09 17:31:39 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/09 18:21:50 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,19 @@ int	main(int argc, char **argv)
 	//start_thread (pthread_creat(),philo_routine)
 	//start_monitor (pthread_creat(), monitor)
 	//join_thread(pthread_join())
-	//cleanup_all_mutex_and_free(&data);
+	cleanup_all_mutex_and_free(&data);
 	return (EXIT_SUCCESS);
 }
+
+
+/*
+test status of mutex:
+	int i = 0;
+	while (i < data.number_of_philo)
+	{
+		printf("Philosopher %d:\n", data.philo[i].id);
+		printf("Left fork addr : %p\n", (void *)data.philo[i].left_fork);
+		printf("Right fork addr: %p\n", (void *)data.philo[i].right_fork);
+		i++;
+	}
+*/

@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:45:33 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/09 16:42:30 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/09 14:48:29 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@ struct timeval {
     suseconds_t tv_usec;//microseconds(0 ~ 999999)
 };
 */
+typedef struct s_philo	t_philo;
+typedef struct s_data	t_data;
+
 typedef struct s_data
 {
 	int				number_of_philo;
@@ -55,7 +58,7 @@ typedef struct s_philo
 int	parse_argv(int argc, char **argv, t_data *argvs);
 
 //utils
-void	cleanup_init_philo_fail(t_data *data);
+void	cleanup_all_mutex_and_free(t_data *data);
 long	get_current_time(void);
 int		init_data(t_data *data);
 int		init_philo(t_data *data);

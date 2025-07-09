@@ -8,7 +8,8 @@ SRCS_DIR := src
 OBJS_DIR := obj
 
 SRCS := $(SRCS_DIR)/main.c \
-		$(SRCS_DIR)/parse.c
+		$(SRCS_DIR)/parse.c \
+		$(SRCS_DIR)/init_utils.c 
 OBJS := $(SRCS:$(SRCS_DIR)/%.c=$(OBJS_DIR)/%.o)
 
 
