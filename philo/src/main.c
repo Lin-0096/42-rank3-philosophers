@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:17:43 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/09 23:09:00 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/10 19:36:32 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,20 @@ int	main(int argc, char **argv)
 	}
 	if (!init_philo(&data))
 	{
-		cleanup_all_mutex_and_free(&data);
+		//cleanup_all_mutex_and_free(&data);
 		printf("Error: init data failed\n");
 		return (EXIT_FAILURE);
 	}
-	//start_thread (pthread_creat(),philo_routine)
+	if (!start_thread(&data))
+	{
+		cleanup_all_mutex_and_free(&data);
+		//should i close the thread that i opened before return???
+		return (EXIT_FAILURE);
+	}
+	//test mutex
+	for (int i = 0; i < data.number_of_philo; i++)
+		pthread_join(data.philo[i].thread_id, NULL);
+
 	//start_monitor (pthread_creat(), monitor)
 	//join_thread (pthread_join())
 	cleanup_all_mutex_and_free(&data);

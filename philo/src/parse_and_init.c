@@ -6,42 +6,57 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 14:39:46 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/09 23:08:10 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/10 19:59:35 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	free_and_destroy_forks(t_data *data, int i)
+static int	read_num(char *str)
 {
-	if (data->fork)
+	long	result;
+
+	result = 0;
+	while (*str == ' ' || (*str >= 9 && *str <= 13))
+		str++;
+	if (!*str)
+		return (-1);
+	while(*str >= '0' && *str <= '9')
 	{
-		while (i >= 0)
-		{
-			pthread_mutex_destroy(&data->fork[i]);
-			i--;
-		}
-		free(data->fork);
+		result = result * 10 + (*str - '0');
+		if (result > INT_MAX)
+			return (-1);
+		str++;
 	}
+	if (*str)
+		return (-1);
+	return ((int)result);
 }
 
-void	cleanup_all_mutex_and_free(t_data *data)
+int	parse_argv(int argc, char **argv, t_data *data)
 {
-	free_and_destroy_forks(data, data->number_of_philo - 1);
-	pthread_mutex_destroy(&data->print);
-	pthread_mutex_destroy(&data->died_mutex);
-	if (data->philo)
-		free(data->philo);
-}
+	int	i;
+	int	tmp;
 
-long	get_current_time(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL); //fills the tv struct with the current system time
-	return (tv.tv_sec * 1000L + tv.tv_usec / 1000);
-	//1000L ensures the result is a long to avoid overflow.
-	//convert seconds to milliseconds. convert microseconds to milliseconds. return total time then
+	if (argc != 5 && argc != 6)
+		return (0);
+	i = 1;
+	while (i < argc)
+	{
+		tmp = read_num(argv[i]);
+		if (tmp <= 0)
+			return (0);
+		i++;
+	}
+	data->number_of_philo = read_num(argv[1]);
+	data->time_to_die = read_num(argv[2]);
+	data->time_to_eat = read_num(argv[3]);
+	data->time_to_sleep = read_num(argv[4]);
+	if (argc == 6)
+		data->num_must_eat = read_num(argv[5]);
+	else if (argc == 5)
+		data->num_must_eat = -1;
+	return (1);
 }
 
 int	init_data(t_data *data)
@@ -58,12 +73,12 @@ int	init_data(t_data *data)
 			return (free_and_destroy_forks(data, i - 1), 0); //should -1 here??
 		i++;
 	}
-	if (pthread_mutex_init(&data->print, NULL) != 0)
+	if (pthread_mutex_init(&data->print_mutex, NULL) != 0)
 		return (free_and_destroy_forks(data, data->number_of_philo - 1), 0); //should -1 here??
 	data->someone_died = 0;
 	if (pthread_mutex_init(&data->died_mutex, NULL) != 0)
 	{
-		pthread_mutex_destroy(&data->print);
+		pthread_mutex_destroy(&data->print_mutex);
 		return (free_and_destroy_forks(data, data->number_of_philo - 1), 0);
 	}
 	data->philo = malloc(sizeof(t_philo) * data->number_of_philo);
@@ -86,6 +101,7 @@ int	init_philo(t_data *data)
 		data->philo[i].left_fork = &data->fork[i];
 		data->philo[i].right_fork = &data->fork[(i + 1) % data->number_of_philo];
 		data->philo[i].data = data;
+		//no need to initlize thread_id, it will be given value in pthread_create!!
 		i++;
 	}
 	return (1);
