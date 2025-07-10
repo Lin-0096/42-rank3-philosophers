@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_utils.c                                       :+:      :+:    :+:   */
+/*   parse_and_init.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 14:39:46 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/10 19:59:35 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/10 17:11:58 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,11 @@ int	init_data(t_data *data)
 	while (i < data->number_of_philo)
 	{
 		if (pthread_mutex_init(&data->fork[i], NULL) != 0) //success 0;
-			return (free_and_destroy_forks(data, i - 1), 0); //should -1 here??
+			return (free_and_destroy_forks(data, i - 1), 0); //should -1
 		i++;
 	}
 	if (pthread_mutex_init(&data->print_mutex, NULL) != 0)
-		return (free_and_destroy_forks(data, data->number_of_philo - 1), 0); //should -1 here??
+		return (free_and_destroy_forks(data, data->number_of_philo - 1), 0); //should -1
 	data->someone_died = 0;
 	if (pthread_mutex_init(&data->died_mutex, NULL) != 0)
 	{

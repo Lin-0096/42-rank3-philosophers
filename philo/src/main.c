@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:17:43 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/10 19:36:32 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/10 17:09:09 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,9 @@ int	main(int argc, char **argv)
 	}
 	//test mutex
 	for (int i = 0; i < data.number_of_philo; i++)
+	{
 		pthread_join(data.philo[i].thread_id, NULL);
+	}
 
 	//start_monitor (pthread_creat(), monitor)
 	//join_thread (pthread_join())
