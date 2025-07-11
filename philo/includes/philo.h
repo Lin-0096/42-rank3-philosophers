@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:45:33 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/10 19:59:15 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/11 14:24:20 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct s_philo
 	int				id;
 	int				eat_count;
 	long			last_mealtime; //if (current_time - last_mealtime > time_to_die), die
+	pthread_mutex_t	last_mealtime_mutex; //Multiple threads read/write last_mealtime simultaneously, should protect
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_t		thread_id;
@@ -53,6 +54,7 @@ typedef struct s_philo
 void	cleanup_all_mutex_and_free(t_data *data);
 long	get_current_time(void);
 void	free_and_destroy_forks(t_data *data, int i);
+void	destroy_last_mealtime_mutex(t_data *data, int i);
 
 //parse and init
 int	parse_argv(int argc, char **argv, t_data *argvs);
@@ -61,5 +63,12 @@ int	init_philo(t_data *data);
 
 //action
 int	start_thread(t_data *data);
+
+//action utils
+void	print_status(t_philo *philo, char *msg);
+void	take_forks(t_philo *philo);
+void	eating(t_philo *philo);
+void	drop_fork(t_philo *philo);
+void	sleeping(t_philo *philo);
 
 #endif

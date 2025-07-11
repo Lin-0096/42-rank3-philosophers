@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 14:39:46 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/10 17:11:58 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/11 13:44:22 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,8 @@ int	init_philo(t_data *data)
 		data->philo[i].left_fork = &data->fork[i];
 		data->philo[i].right_fork = &data->fork[(i + 1) % data->number_of_philo];
 		data->philo[i].data = data;
+		if (pthread_mutex_init(&data->philo[i].last_mealtime_mutex, NULL) != 0)
+			return (destroy_last_mealtime_mutex(data, i - 1), 0);
 		//no need to initlize thread_id, it will be given value in pthread_create!!
 		i++;
 	}

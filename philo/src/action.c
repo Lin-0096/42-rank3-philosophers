@@ -6,43 +6,37 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 22:45:18 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/10 19:54:55 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/11 13:51:58 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-static void	print_status(t_philo *philo, char *msg)
-{
-	long	timestamp;
 
-	timestamp = get_current_time() - philo->data->start_time;
-	pthread_mutex_lock(&philo->data->print_mutex);
-	printf("%ld %i %s\n", timestamp, philo->id, msg);
-	pthread_mutex_unlock(&philo->data->print_mutex);
-}
-
-void	*philo_routine(void *arg)
+static void	*philo_routine(void *arg)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	// stagger the start of the threads in order to reduce the chance of deadlock
+	// if (philo->id % 2 == 0)
+	// 	usleep(200);
 	while (1)
 	{
-		//thinking, doing nothing, just check status and print status
+		if (philo->eat_count >= philo->data->num_must_eat)
+		{
+			print_status(philo, "has eaten the maximum number of times");
+			break;
+		}
+		//thinking, doing nothing, just check status and print it
 		print_status(philo, "is thinking");
-		//take left fork
-		pthread_mutex_lock(philo->left_fork);
-		print_status(philo, "has taken a fork");
-		//take right fork
-		pthread_mutex_lock(philo->right_fork);
-		print_status(philo, "has taken a fork");
-		//eating
-		//unlock fork
-		//eat_count++
+		//eating: take both forks, eating, drop forks
+		take_forks(philo);
+		eating(philo);
+		drop_fork(philo);
 		//sleeping
-		usleep(1000);
+		sleeping(philo);
 	}
-
+	return (NULL);
 }
 
 int start_thread(t_data *data)

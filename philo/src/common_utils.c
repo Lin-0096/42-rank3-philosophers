@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   common_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 19:57:51 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/10 17:08:41 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/11 13:56:35 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,16 @@ void	cleanup_all_mutex_and_free(t_data *data)
 	pthread_mutex_destroy(&data->died_mutex);
 	if (data->philo)
 		free(data->philo);
+	
+}
+
+void	destroy_last_mealtime_mutex(t_data *data, int i)
+{
+	while (i >= 0)
+	{
+		pthread_mutex_destroy(&data->philo[i].last_mealtime_mutex); // Destroy mutex
+		i--;
+	}
 }
 
 long	get_current_time(void)
