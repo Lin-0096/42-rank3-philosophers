@@ -6,11 +6,11 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:17:43 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/11 14:06:27 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/11 23:05:22 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <philo.h>
+#include "philo.h"
 
 int	main(int argc, char **argv)
 {
@@ -28,7 +28,7 @@ int	main(int argc, char **argv)
 	}
 	if (!init_philo(&data))
 	{
-		printf("Error: init data failed\n");
+		printf("Error: init philo failed\n");
 		return (EXIT_FAILURE);
 	}
 	if (!start_thread(&data))
@@ -37,14 +37,18 @@ int	main(int argc, char **argv)
 		//should i close the thread that i opened before return???
 		return (EXIT_FAILURE);
 	}
+	//start_monitor (pthread_creat(), monitor)
+	pthread_t monitor;
+	pthread_create(&monitor, NULL, monitor_routine, &data);
+	//join_thread (pthread_join())
+
 	//test mutex
 	for (int i = 0; i < data.number_of_philo; i++)
 	{
 		pthread_join(data.philo[i].thread_id, NULL);
 	}
+	pthread_join(monitor, NULL);
 
-	//start_monitor (pthread_creat(), monitor)
-	//join_thread (pthread_join())
 	destroy_last_mealtime_mutex(&data, data.number_of_philo - 1);
 	cleanup_all_mutex_and_free(&data);
 	return (EXIT_SUCCESS);

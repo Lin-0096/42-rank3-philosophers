@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 22:45:18 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/11 13:51:58 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/11 22:51:44 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,13 @@ static void	*philo_routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	// stagger the start of the threads in order to reduce the chance of deadlock
-	// if (philo->id % 2 == 0)
-	// 	usleep(200);
 	while (1)
 	{
-		if (philo->eat_count >= philo->data->num_must_eat)
+		//should i check eat_count and protect eat_count??
+		if (check_death(philo->data))
 		{
-			print_status(philo, "has eaten the maximum number of times");
-			break;
+			drop_fork(philo);
+			break ;
 		}
 		//thinking, doing nothing, just check status and print it
 		print_status(philo, "is thinking");
@@ -35,6 +33,7 @@ static void	*philo_routine(void *arg)
 		drop_fork(philo);
 		//sleeping
 		sleeping(philo);
+		usleep(1000);// Small delay to allow other threads to run
 	}
 	return (NULL);
 }

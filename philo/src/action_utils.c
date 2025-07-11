@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 12:59:20 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/11 13:47:49 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/11 23:46:14 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,20 @@ void	take_forks(t_philo *philo)
 
 void	eating(t_philo *philo)
 {
+	long	start;
+
 	print_status(philo, "is eating");
 	pthread_mutex_lock(&philo->last_mealtime_mutex);
 	philo->last_mealtime = get_current_time();
 	pthread_mutex_unlock(&philo->last_mealtime_mutex);
-	usleep(philo->data->time_to_eat * 1000);
+	//do not sleep till end, should sleep a little while and check death
+	start = get_current_time();
+	while (get_current_time() - start < philo->data->time_to_eat)
+	{
+		if (check_death(philo->data))
+			break ;
+		usleep(500);
+	}
 	philo->eat_count++;
 }
 
@@ -60,6 +69,15 @@ void	drop_fork(t_philo *philo)
 
 void	sleeping(t_philo *philo)
 {
+	long	start;
+
 	print_status(philo, "is sleeping");
-	usleep(philo->data->time_to_sleep *1000);
+	start = get_current_time();
+	//do not sleep till end, should sleep a little while and check death
+	while (get_current_time() - start < philo->data->time_to_sleep)
+	{
+		if (check_death(philo->data))
+			break ;
+		usleep(500);
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 19:57:51 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/11 13:56:35 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/11 23:20:32 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	cleanup_all_mutex_and_free(t_data *data)
 	pthread_mutex_destroy(&data->died_mutex);
 	if (data->philo)
 		free(data->philo);
-	
+
 }
 
 void	destroy_last_mealtime_mutex(t_data *data, int i)
@@ -52,4 +52,14 @@ long	get_current_time(void)
 	return (tv.tv_sec * 1000L + tv.tv_usec / 1000);
 	//1000L ensures the result is a long to avoid overflow.
 	//convert seconds to milliseconds. convert microseconds to milliseconds. return total time then
+}
+
+int	check_death(t_data *data)
+{
+	int	someone_died;
+
+	pthread_mutex_lock(&data->died_mutex);
+	someone_died = data->someone_died;
+	pthread_mutex_unlock(&data->died_mutex);
+	return (someone_died);
 }
