@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 22:45:18 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/11 22:51:44 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/11 21:19:55 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,9 @@ static void	*philo_routine(void *arg)
 	while (1)
 	{
 		//should i check eat_count and protect eat_count??
+		
 		if (check_death(philo->data))
-		{
-			drop_fork(philo);
 			break ;
-		}
 		//thinking, doing nothing, just check status and print it
 		print_status(philo, "is thinking");
 		//eating: take both forks, eating, drop forks
