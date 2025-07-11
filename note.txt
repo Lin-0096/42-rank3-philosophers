@@ -14,9 +14,11 @@ the data type used to represent a thread.
 think of it like a "handle" or "ID" to a thread.
 When create a new thread using pthread_create(), you pass a pthread_t variable to keep track of that thread.
 ::
-pthread_creat()
-pthread_join()
-pthread_detach()
+int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg)   //Creates a new thread of execution.
+
+int pthread_detach(pthread_t thread)   //Marks a thread for deletion.
+
+int pthread_join(pthread_t thread, void **value_ptr)   //Causes the calling thread to wait for the termination of the specified thread.
 --------------------------------
 long	get_current_time(void)
 {
@@ -33,3 +35,33 @@ struct timeval {
     suseconds_t tv_usec;//microseconds(0 ~ 999999)
 };
 ---------------------------------
+!!!!!test if the program has data race:
+example:
+valgrind --tool=helgrind ./philo 5 800 200 200
+
+---------------------
+usleep: suspend thread execution for an interval measured in microseconds
+1000 microseconds = 1 milliseconds
+
+--------------
+// if (philo->eat_count > 0 && philo->eat_count >= philo->data->num_must_eat) //should i check eat_count and protect eat_count??
+// {
+// 	print_status(philo, "has eaten the maximum number of times");
+// 	break ;
+// }
+--------------------
+!!!! wrong: usleep(usleep(philo->data->time_to_eat * 1000);)
+
+The main reason is that both your eating and sleeping functions use a single, long usleep to wait out the full eating or sleeping period, without checking the death flag during that time. If a philosopher is supposed to “stop” (because someone has died) while they're still sleeping or eating, they won’t notice it—they’ll just continue eating or sleeping until the time is up. Meanwhile, your monitor thread may notice that their last_mealtime hasn’t been updated in time and will mark them as dead.
+------------
+remember to add usleep(1000) in both routines
+
+usleep(1000)
+1\Prevents 100% CPU Usage:
+Without a small sleep inside the philosopher's infinite loop, the thread would run as fast as possible, using up all available CPU. This is called “busy-waiting,” and it's very inefficient.
+
+2\Gives Other Threads a Chance:
+By adding a small usleep, you tell the thread to “pause” for 1 millisecond (1000 microseconds) at the end of each loop. This allows the operating system to schedule other threads (like other philosophers and the monitor), making your program more efficient and fair.
+
+3\Makes Timing More Predictable:
+It smooths out the loop, preventing it from spamming actions or log messages thousands of times per second, which would be unrealistic in the context of the philosopher simulation.
