@@ -52,7 +52,7 @@ usleep: suspend thread execution for an interval measured in microseconds
 --------------------
 !!!! wrong: usleep(usleep(philo->data->time_to_eat * 1000);)
 
-The main reason is that both your eating and sleeping functions use a single, long usleep to wait out the full eating or sleeping period, without checking the death flag during that time. If a philosopher is supposed to “stop” (because someone has died) while they're still sleeping or eating, they won’t notice it—they’ll just continue eating or sleeping until the time is up. Meanwhile, your monitor thread may notice that their last_mealtime hasn’t been updated in time and will mark them as dead.
+The main reason is that both the eating and sleeping functions use a single, long usleep to wait out the full eating or sleeping period, without checking the death flag during that time. If a philosopher is supposed to “stop” (because someone has died) while they're still sleeping or eating, they won’t notice it—they’ll just continue eating or sleeping until the time is up. Meanwhile, your monitor thread may notice that their last_mealtime hasn’t been updated in time and will mark them as dead.
 ------------
 remember to add usleep(1000) in both routines
 
