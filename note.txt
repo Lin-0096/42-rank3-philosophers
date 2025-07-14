@@ -65,3 +65,15 @@ By adding a small usleep, you tell the thread to “pause” for 1 millisecond (
 
 3\Makes Timing More Predictable:
 It smooths out the loop, preventing it from spamming actions or log messages thousands of times per second, which would be unrealistic in the context of the philosopher simulation.
+--------------------
+/*
+test status of mutex:
+	int i = 0;
+	while (i < data.number_of_philo)
+	{
+		printf("Philosopher %d:\n", data.philo[i].id);
+		printf("Left fork addr : %p\n", (void *)data.philo[i].left_fork);
+		printf("Right fork addr: %p\n", (void *)data.philo[i].right_fork);
+		i++;
+	}
+*/
