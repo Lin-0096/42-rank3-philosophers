@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 22:45:18 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/14 21:00:02 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/14 20:05:24 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,14 @@ static void	*philo_routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	if (philo->data->number_of_philo == 1)
+	{
+		pthread_mutex_lock(philo->left_fork);
+		print_status(philo, "has taken a fork");
+		usleep(philo->data->time_to_die * 1000);
+		pthread_mutex_unlock(philo->left_fork);
+		return (NULL);
+	}
 	while (1)
 	{
 		if (check_stop(philo->data))

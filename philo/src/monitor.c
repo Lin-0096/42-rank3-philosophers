@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 22:45:43 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/14 20:35:15 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/14 19:20:26 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,9 @@ static int	check_all_full(t_data *data)
 		pthread_mutex_lock(&data->stop_mutex);
 		data->stop_simulation = 1;
 		pthread_mutex_unlock(&data->stop_mutex);
+		pthread_mutex_lock(&data->print_mutex);
 		printf("Everyone is full\n");
+		pthread_mutex_unlock(&data->print_mutex);
 		return	(0);
 	}
 	return (1);
