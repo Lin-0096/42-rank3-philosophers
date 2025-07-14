@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 19:57:51 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/11 23:20:32 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/14 21:10:25 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,16 @@ void	cleanup_all_mutex_and_free(t_data *data)
 {
 	free_and_destroy_forks(data, data->number_of_philo - 1);
 	pthread_mutex_destroy(&data->print_mutex);
-	pthread_mutex_destroy(&data->died_mutex);
+	pthread_mutex_destroy(&data->stop_mutex);
 	if (data->philo)
 		free(data->philo);
-
 }
 
 void	destroy_last_mealtime_mutex(t_data *data, int i)
 {
 	while (i >= 0)
 	{
-		pthread_mutex_destroy(&data->philo[i].last_mealtime_mutex); // Destroy mutex
+		pthread_mutex_destroy(&data->philo[i].meal_mutex); // Destroy mutex
 		i--;
 	}
 }
@@ -54,12 +53,12 @@ long	get_current_time(void)
 	//convert seconds to milliseconds. convert microseconds to milliseconds. return total time then
 }
 
-int	check_death(t_data *data)
+int	check_stop(t_data *data)
 {
 	int	someone_died;
 
-	pthread_mutex_lock(&data->died_mutex);
-	someone_died = data->someone_died;
-	pthread_mutex_unlock(&data->died_mutex);
+	pthread_mutex_lock(&data->stop_mutex);
+	someone_died = data->stop_simulation;
+	pthread_mutex_unlock(&data->stop_mutex);
 	return (someone_died);
 }

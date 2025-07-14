@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 22:45:18 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/11 21:19:55 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/14 21:00:02 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,7 @@ static void	*philo_routine(void *arg)
 	philo = (t_philo *)arg;
 	while (1)
 	{
-		//should i check eat_count and protect eat_count??
-		
-		if (check_death(philo->data))
+		if (check_stop(philo->data))
 			break ;
 		//thinking, doing nothing, just check status and print it
 		print_status(philo, "is thinking");
@@ -36,7 +34,7 @@ static void	*philo_routine(void *arg)
 	return (NULL);
 }
 
-int start_thread(t_data *data)
+int start_thread(t_data *data, pthread_t *monitor)
 {
 	int	i;
 
@@ -49,6 +47,11 @@ int start_thread(t_data *data)
 			return (0);
 		}
 		i++;
+	}
+	if (pthread_create(monitor, NULL, monitor_routine, data) != 0)
+	{
+		printf("Error: failed to create monitor thread\n");
+		return (0);
 	}
 	return (1);
 }
