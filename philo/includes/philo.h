@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:45:33 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/14 21:13:59 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/16 11:29:38 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int		init_data(t_data *data);
 int		init_philo(t_data *data);
 
 //action
-int	start_thread(t_data *data, pthread_t *monitor);
+int		start_thread(t_data *data, pthread_t *monitor);
 //monitor
 void	*monitor_routine(void *arg);
 

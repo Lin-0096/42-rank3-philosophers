@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 12:59:20 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/15 14:39:39 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/16 12:19:05 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,44 @@ void	print_status(t_philo *philo, char *msg)
 {
 	long	timestamp;
 
+	pthread_mutex_lock(&philo->data->stop_mutex); //???
+	if (philo->data->stop_simulation)
+	{
+		pthread_mutex_unlock(&philo->data->stop_mutex);
+		return ;
+	}
+	pthread_mutex_unlock(&philo->data->stop_mutex);//
+
 	timestamp = get_current_time() - philo->data->start_time;
 	pthread_mutex_lock(&philo->data->print_mutex);
 	printf("%ld %i %s\n", timestamp, philo->id, msg);
 	pthread_mutex_unlock(&philo->data->print_mutex);
 }
 
+// void	take_forks(t_philo *philo)
+// {
+// 	if (philo->id == philo->data->number_of_philo)
+// 	{
+// 		//pick up in reverse order
+// 		pthread_mutex_lock(philo->right_fork);
+// 		print_status(philo, "has taken a fork");
+// 		pthread_mutex_lock(philo->left_fork);
+// 		print_status(philo, "has taken a fork");
+// 	}
+// 	else
+// 	{
+// 		//pick up the left one first and right one then
+// 		pthread_mutex_lock(philo->left_fork);
+// 		print_status(philo, "has taken a fork");
+// 		pthread_mutex_lock(philo->right_fork);
+// 		print_status(philo, "has taken a fork");
+// 	}
+// }
+
 void	take_forks(t_philo *philo)
 {
-	if (philo->id == philo->data->number_of_philo)
+	if (philo->id % 2 == 0)
 	{
-		//pick up in reverse order
 		pthread_mutex_lock(philo->right_fork);
 		print_status(philo, "has taken a fork");
 		pthread_mutex_lock(philo->left_fork);
@@ -34,7 +61,6 @@ void	take_forks(t_philo *philo)
 	}
 	else
 	{
-		//pick up the left one first and right one then
 		pthread_mutex_lock(philo->left_fork);
 		print_status(philo, "has taken a fork");
 		pthread_mutex_lock(philo->right_fork);
@@ -46,10 +72,13 @@ void	eating(t_philo *philo)
 {
 	long	start;
 
-	print_status(philo, "is eating");
+	if (check_stop(philo->data)) //
+		return ;
+
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_mealtime = get_current_time();
 	pthread_mutex_unlock(&philo->meal_mutex);
+	print_status(philo, "is eating");
 	//do not sleep till end, should sleep a little while and check death
 	start = get_current_time();
 	while (get_current_time() - start < philo->data->time_to_eat)
@@ -73,6 +102,8 @@ void	sleeping(t_philo *philo)
 {
 	long	start;
 
+	if (check_stop(philo->data)) //
+		return ;
 	print_status(philo, "is sleeping");
 	start = get_current_time();
 	//do not sleep till end, should sleep a little while and check death

@@ -42,13 +42,6 @@ valgrind --tool=helgrind ./philo 5 800 200 200
 ---------------------
 usleep: suspend thread execution for an interval measured in microseconds
 1000 microseconds = 1 milliseconds
-
---------------
-// if (philo->eat_count > 0 && philo->eat_count >= philo->data->num_must_eat) //should i check eat_count and protect eat_count??
-// {
-// 	print_status(philo, "has eaten the maximum number of times");
-// 	break ;
-// }
 --------------------
 !!!! wrong: usleep(usleep(philo->data->time_to_eat * 1000);)
 
@@ -77,3 +70,44 @@ test status of mutex:
 		i++;
 	}
 */
+--------
+./philo 3 210 100 100 5
+
+-----------------
+void	take_forks(t_philo *philo)
+{
+	if (philo->id == philo->data->number_of_philo)
+	{
+		//pick up in reverse order
+		pthread_mutex_lock(philo->right_fork);
+		print_status(philo, "has taken a fork");
+		pthread_mutex_lock(philo->left_fork);
+		print_status(philo, "has taken a fork");
+	}
+	else
+	{
+		//pick up the left one first and right one then
+		pthread_mutex_lock(philo->left_fork);
+		print_status(philo, "has taken a fork");
+		pthread_mutex_lock(philo->right_fork);
+		print_status(philo, "has taken a fork");
+	}
+}
+
+void	take_forks(t_philo *philo)
+{
+	if (philo->id % 2 == 0)
+	{
+		pthread_mutex_lock(philo->right_fork);
+		print_status(philo, "has taken a fork");
+		pthread_mutex_lock(philo->left_fork);
+		print_status(philo, "has taken a fork");
+	}
+	else
+	{
+		pthread_mutex_lock(philo->left_fork);
+		print_status(philo, "has taken a fork");
+		pthread_mutex_lock(philo->right_fork);
+		print_status(philo, "has taken a fork");
+	}
+}
