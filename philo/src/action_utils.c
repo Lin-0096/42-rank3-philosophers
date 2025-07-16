@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 12:59:20 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/16 12:19:05 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/16 12:23:23 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	print_status(t_philo *philo, char *msg)
 {
 	long	timestamp;
 
-	pthread_mutex_lock(&philo->data->stop_mutex); //???
+	pthread_mutex_lock(&philo->data->stop_mutex); //should check if died first, no deed to print anything if died
 	if (philo->data->stop_simulation)
 	{
 		pthread_mutex_unlock(&philo->data->stop_mutex);
@@ -29,26 +29,6 @@ void	print_status(t_philo *philo, char *msg)
 	printf("%ld %i %s\n", timestamp, philo->id, msg);
 	pthread_mutex_unlock(&philo->data->print_mutex);
 }
-
-// void	take_forks(t_philo *philo)
-// {
-// 	if (philo->id == philo->data->number_of_philo)
-// 	{
-// 		//pick up in reverse order
-// 		pthread_mutex_lock(philo->right_fork);
-// 		print_status(philo, "has taken a fork");
-// 		pthread_mutex_lock(philo->left_fork);
-// 		print_status(philo, "has taken a fork");
-// 	}
-// 	else
-// 	{
-// 		//pick up the left one first and right one then
-// 		pthread_mutex_lock(philo->left_fork);
-// 		print_status(philo, "has taken a fork");
-// 		pthread_mutex_lock(philo->right_fork);
-// 		print_status(philo, "has taken a fork");
-// 	}
-// }
 
 void	take_forks(t_philo *philo)
 {
@@ -104,6 +84,7 @@ void	sleeping(t_philo *philo)
 
 	if (check_stop(philo->data)) //
 		return ;
+
 	print_status(philo, "is sleeping");
 	start = get_current_time();
 	//do not sleep till end, should sleep a little while and check death
