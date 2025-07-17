@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 22:45:18 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/16 11:32:50 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/17 15:43:32 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ static void	*philo_routine(void *arg)
 		pthread_mutex_unlock(philo->left_fork);
 		return (NULL);
 	}
+	if (philo->id % 2 == 0)
+		usleep(1000);
 	while (1)
 	{
 		if (check_stop(philo->data))
@@ -59,6 +61,7 @@ int start_thread(t_data *data, pthread_t *monitor)
 	if (pthread_create(monitor, NULL, monitor_routine, data) != 0)
 	{
 		printf("Error: failed to create monitor thread\n");
+		i = 0;
 		return (0);
 	}
 	return (1);
