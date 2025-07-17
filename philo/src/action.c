@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 22:45:18 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/17 15:43:32 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/17 17:40:26 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,11 @@ int start_thread(t_data *data, pthread_t *monitor)
 	i = 0;
 	while (i < data->number_of_philo)
 	{
-		if (pthread_create(&data->philo[i].thread_id, NULL, philo_routine, &data->philo[i]) != 0)
+		if (i == 3 || pthread_create(&data->philo[i].thread_id, NULL, philo_routine, &data->philo[i]) != 0)
 		{
 			printf("Error: failed to create thread for philosopher %d\n", i);
+			while (--i >= 0)
+				pthread_join(data->philo[i].thread_id, NULL); //
 			return (0);
 		}
 		i++;

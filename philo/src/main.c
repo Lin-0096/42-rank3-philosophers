@@ -6,7 +6,7 @@
 /*   By: linliu <linliu@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 14:17:43 by linliu            #+#    #+#             */
-/*   Updated: 2025/07/17 14:38:00 by linliu           ###   ########.fr       */
+/*   Updated: 2025/07/17 17:40:14 by linliu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	main(int argc, char **argv)
 		print_and_exit("Error: init philo failed");
 	if (!start_thread(&data, &monitor))
 	{
-		cleanup_all_mutex_and_free(&data);
+		//cleanup_all_mutex_and_free(&data);
 		exit(EXIT_FAILURE);
 	}
 	i = 0;
