@@ -72,7 +72,18 @@ test status of mutex:
 */
 --------
 ./philo 3 210 100 100 5
+test:
+valgrind --leak-check=full --track-origins=yes ./philo 5 800 200 200
+valgrind --tool=drd ./philo 5 800 200 200 3               //Data Race Detector
+valgrind --tool=helgrind ./philo 10 1000 200 200 20
+valgrind --tool=drd ./philo 10 1000 200 200 20 > log.txt
+grep "is eating" log.txt | w -l
+grep "is eating" log.txt | awk '{print $2}' | sort | uniq -c
+------------
+If there is only 1 philosopher:
 
+Both the left and right fork pointers point to the same mutex (there is only one fork!).
+so the code tried to lock the same mutex twice in a row, This is “recursive locking”
 -----------------
 void	take_forks(t_philo *philo)
 {
@@ -111,3 +122,10 @@ void	take_forks(t_philo *philo)
 		print_status(philo, "has taken a fork");
 	}
 }
+---------
+!!!!!It shall be safe to destroy an initialized mutex only when it is unlocked and no thread is waiting on it.
+
+make sure that all child threads have been pthread_join() before destroying any mutexes.
+If it exits early due to a failure during thread creation, i should only destroy the mutexes that were successfully initialized and are not currently locked.
+
+when pthread_create failed, the pthread_mutex_destroy the unlocked mutex or some thread is waiting, so i should use pthread_join to wait all successful threads and then destory and cleanup everything. but should remember set stop=1 to tell threads stop asap.
