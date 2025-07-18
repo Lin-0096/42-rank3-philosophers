@@ -9,6 +9,9 @@ pthread_mutex_lock(&lock);            // Lock it (enter critical section)
 // do something shared here
 pthread_mutex_unlock(&lock);          // Unlock (leave critical section)
 -----------------------------
+
+
+
 pthread_t：
 the data type used to represent a thread.
 think of it like a "handle" or "ID" to a thread.
@@ -20,6 +23,9 @@ int pthread_detach(pthread_t thread)   //Marks a thread for deletion.
 
 int pthread_join(pthread_t thread, void **value_ptr)   //Causes the calling thread to wait for the termination of the specified thread.
 --------------------------------
+
+
+
 long	get_current_time(void)
 {
 	struct timeval	tv;
@@ -30,16 +36,23 @@ long	get_current_time(void)
 	//convert seconds to milliseconds. convert microseconds to milliseconds. return total time then
 }
 
+
+
 struct timeval {
     time_t      tv_sec; // seconds(start from 1.1.1970从1970)
     suseconds_t tv_usec;//microseconds(0 ~ 999999)
 };
 ---------------------------------
+
+
 !!!!!test if the program has data race:
 example:
 valgrind --tool=helgrind ./philo 5 800 200 200
 
 ---------------------
+
+
+
 usleep: suspend thread execution for an interval measured in microseconds
 1000 microseconds = 1 milliseconds
 --------------------
@@ -47,6 +60,8 @@ usleep: suspend thread execution for an interval measured in microseconds
 
 The main reason is that both the eating and sleeping functions use a single, long usleep to wait out the full eating or sleeping period, without checking the death flag during that time. If a philosopher is supposed to “stop” (because someone has died) while they're still sleeping or eating, they won’t notice it,they’ll just continue eating or sleeping until the time is up. Meanwhile, your monitor thread may notice that their last_mealtime hasn’t been updated in time and will mark them as dead.
 ------------
+
+
 remember to add usleep(1000) in both routines
 
 usleep(1000)
@@ -58,19 +73,9 @@ By adding a small usleep, you tell the thread to “pause” for 1 millisecond (
 
 3\Makes Timing More Predictable:
 It smooths out the loop, preventing it from spamming actions or log messages thousands of times per second, which would be unrealistic in the context of the philosopher simulation.
---------------------
-/*
-test status of mutex:
-	int i = 0;
-	while (i < data.number_of_philo)
-	{
-		printf("Philosopher %d:\n", data.philo[i].id);
-		printf("Left fork addr : %p\n", (void *)data.philo[i].left_fork);
-		printf("Right fork addr: %p\n", (void *)data.philo[i].right_fork);
-		i++;
-	}
-*/
 --------
+
+
 ./philo 3 210 100 100 5
 test:
 valgrind --leak-check=full --track-origins=yes ./philo 5 800 200 200
@@ -80,11 +85,15 @@ valgrind --tool=drd ./philo 10 1000 200 200 20 > log.txt
 grep "is eating" log.txt | w -l
 grep "is eating" log.txt | awk '{print $2}' | sort | uniq -c
 ------------
+
+
 If there is only 1 philosopher:
 
 Both the left and right fork pointers point to the same mutex (there is only one fork!).
 so the code tried to lock the same mutex twice in a row, This is “recursive locking”
 -----------------
+
+
 void	take_forks(t_philo *philo)
 {
 	if (philo->id == philo->data->number_of_philo)
@@ -104,7 +113,7 @@ void	take_forks(t_philo *philo)
 		print_status(philo, "has taken a fork");
 	}
 }
-
+A classic asymmetrical solution—making even philosophers pick up right fork first, odd philosophers pick left first—prevents deadlock
 void	take_forks(t_philo *philo)
 {
 	if (philo->id % 2 == 0)
@@ -123,9 +132,44 @@ void	take_forks(t_philo *philo)
 	}
 }
 ---------
+
+
 !!!!!It shall be safe to destroy an initialized mutex only when it is unlocked and no thread is waiting on it.
 
 make sure that all child threads have been pthread_join() before destroying any mutexes.
 If it exits early due to a failure during thread creation, i should only destroy the mutexes that were successfully initialized and are not currently locked.
 
 when pthread_create failed, the pthread_mutex_destroy the unlocked mutex or some thread is waiting, so i should use pthread_join to wait all successful threads and then destory and cleanup everything. but should remember set stop=1 to tell threads stop asap.
+----------------
+
+
+check if all printf has been protected:
+grep printf *.c
+-------
+
+
+if (philo->id % 2 == 0)
+		usleep(1000);
+let odd-numbered philosophers eat first (i create stagger to avoid deadlock),This staggering allows philosophers to actually complete their eating/sleeping cycles instead of everyone deadlocking.
+
+without this, When i launch all philosopher threads at (almost) the same time, they all immediately try to pick up their forks.
+Every philosopher grabs their first fork.
+However, the “second” fork each philosopher wants is already held by their neighbor.
+All philosophers get stuck waiting for the second fork, which will never become available.
+---------
+
+
+How This Applies to 5 410 200 200
+With even N = 8, your even/odd + initial delay strategy gives the scheduler enough freedom to stagger access so no one starves.
+
+With odd N = 5, no matter how much you stagger, there’s always a philosopher whose neighbors are fighting over forks—this leads to imbalanced opportunities and potential starvation under certain thread scheduling.
+
+These are known, well-documented behaviors—not issues with your logic.
+
+With an odd number (like 5), even with the same fork-picking strategy, there’s always at least one philosopher whose neighbors are both competing for their forks at the same time, and the cycle of “waits for” relationships cannot be broken by staggering alone.
+
+
+Staggering works well when there’s a “balance” of pairs, i.e., the contention graph is balanced (even number).
+When you have an odd number, perfect staggering is impossible—there’s always a timing where one person keeps missing their chance.
+
+can experiment with larger initial delays for even philosophers, But this only reduces the likelihood; it does not guarantee fairness for odd numbers under heavy contention.
