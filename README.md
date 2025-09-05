@@ -40,25 +40,6 @@ philosophers/
 
 ---
 
-##  Logic Flow Diagram
-
-```mermaid
-flowchart LR
-  A[Start Program] --> B[Parse arguments]
-  B --> C[Initialize forks (mutex) & philosopher threads]
-  C --> D[All threads running? (create philosopher threads)]
-  D --> E[Each Philosopher Loop]
-  E --> F[Think → Acquire left & right forks (mutex lock) → Eat → Release forks (mutex unlock) → Sleep]
-  F --> G[Monitor checks if any philosopher died or if all have eaten enough]
-  G --> H{Stop condition?}
-  H -- Yes --> I[Trigger shutdown & cleanup]
-  I --> J[Join threads, destroy mutexes]
-  J --> K[Exit Program]
-  H -- No --> E
-```
-
----
-
 ##  How to Use
 
 ### 1. Clone the repository
